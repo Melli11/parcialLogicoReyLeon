@@ -14,12 +14,25 @@ comio(simba, vaquitaSanAntonio(remeditos,4)).
 comio(simba, hormiga(schwartzenegger)).
 comio(simba, hormiga(niato)).
 comio(simba, hormiga(lula)).
+comio(shenzi,hormiga(conCaraDeSimba)).
+
 pesoHormiga(2).
  
 %peso(Personaje, Peso)
 peso(pumba, 100).
 peso(timon, 50).
 peso(simba, 200).
+peso(scar, 300).
+peso(shenzi, 400).
+peso(banzai, 500).
+
+persigue(scar, timon).
+persigue(scar, pumba).
+persigue(shenzi, simba).
+persigue(shenzi, scar).
+persigue(banzai, timon).
+
+
 
 
 % a) Qué cucaracha es jugosita: ó sea, hay otra con su mismo tamaño pero ella es más gordita
@@ -36,10 +49,10 @@ cucarachas(Cucaracha):-
     comio(_,cucaracha(Cucaracha,_,_)).
 
 hormigas(Hormiga):-
-    comio(_,hormiga(Hormiga,_,_)).
+    comio(_,hormiga(Hormiga)).
 
 personaje(Personaje):-
-    comio(Personaje,_).
+    peso(Personaje,_).
 
 
 mismoTamanio(Cucaracha,OtraCucaracha):-
@@ -68,10 +81,9 @@ test(punto1a,nondet):-
 
 hormigofilico(Personaje):-
 personaje(Personaje),
-comio(Personaje,hormiga(Hormiga)),
-findall(Hormiga,(comio(Personaje,hormigas(Hormiga))),Hormigas),
-sumlist(Hormigas,Total),
-Total>2.
+findall(Hormiga,(comio(Personaje,_),hormigas(Hormiga)),Hormigas),
+length(Hormigas,Total),
+Total >=2.
 
 
     
@@ -106,11 +118,10 @@ test(punto1c,nondet):-
 % Además, pumba es picarón de por sí.
 
 picarones(Conjunto):-
-    personaje(Personaje),
     findall(Personaje,esPicaron(Personaje),Conjunto).
 
 esPicaron(Personaje):-
-    comio(Personaje,cucaracha(Cucaracha,_,_)),
+    comio(Personaje,Cucaracha),
     jugosita(Cucaracha).
 
 esPicaron(Personaje):-
@@ -118,7 +129,48 @@ esPicaron(Personaje):-
 
 esPicaron(pumba).
 
-% vaquitaSanAntonio(gervasia,3)
+:- begin_tests(resolucion).
+test(punto1d,nondet):-
+    picarones([timon,simba,pumba]).
+:- end_tests(resolucion).
+
+
+
+% 2a) Se quiere saber cuánto engorda un personaje (sabiendo que engorda una cantidad igual a la suma de 
+%  los pesos de todos los bichos en su menú). Los bichos no engordan.
+
+cuantoEngorda(Personaje,Total):-
+    personaje(Personaje),
+    findall(Peso,(comio(Personaje,Bicho),pesoBicho(Bicho,Peso)),Pesos),
+    sumlist(Pesos,Total).
+
+
+pesoBicho(hormiga(Hormiga),Peso):-
+    comio(_,hormiga(Hormiga)),
+    pesoHormiga(Peso).
+
+pesoBicho(cucaracha(Cucaracha,Tamanio,Peso),Peso):-
+    comio(_,cucaracha(Cucaracha,Tamanio,Peso)).
+
+pesoBicho(vaquitaSanAntonio(Nombre,Peso),Peso):-
+    comio(_,vaquitaSanAntonio(Nombre,Peso)).
+
+:- begin_tests(resolucion).
+test(punto2a,nondet):-
+    cuantoEngorda(pumba,83),
+    cuantoEngorda(timon,17),
+    cuantoEngorda(simba,10).
+:- end_tests(resolucion).
+
+% b) Pero como indica la ley de la selva, cuando un personaje persigue a otro, se lo termina comiendo, y por lo 
+% tanto también engorda. Realizar una nueva version del predicado cuantoEngorda.
+
+cuantoEngordaPorPresa(Personaje,Total):-
+    personaje(Personaje),
+    findall(Peso,(persigue(Personaje,Presa),peso(Presa,Peso)),Pesos),
+    sumlist(Pesos,Total).
+
+    % vaquitaSanAntonio(gervasia,3)
 % hormiga(tuNoEresLaReina)
 % cucaracha(ginger,15,6)
 
@@ -129,3 +181,9 @@ esPicaron(pumba).
 % comio(simba, hormiga(schwartzenegger)).
 % comio(simba, hormiga(niato)).
 % comio(simba, hormiga(lula)).
+% persigue(scar, timon).
+% persigue(scar, pumba).
+% persigue(shenzi, simba).
+% persigue(shenzi, scar).
+% persigue(banzai, timon).
+%peso(Personaje, Peso)

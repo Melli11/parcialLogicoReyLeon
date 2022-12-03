@@ -34,12 +34,12 @@ persigue(scar, mufasa).
 /* punto 1 */
 
 jugosita(cucaracha(_,Tamaño,Peso1)):-	comio(_,cucaracha(_,Tamaño,Peso2)),
-										Peso1 > Peso2 .
+	Peso1 > Peso2 .
 												
-hormigofilico(Animal):-	peso(Animal,_),
-						findall(Hormiga,comio(Animal,hormiga(Hormiga)),Hormigas),
-						length(Hormigas,Cant),
-						Cant >= 2 .
+hormigofilico(Animal):-
+	peso(Animal,_),					findall(Hormiga,comio(Animal,hormiga(Hormiga)),Hormigas),
+	length(Hormigas,Cant),
+	Cant >= 2 .
 						
 cucarachofobico(Animal):-	peso(Animal,_),
 							not(comio(Animal,cucaracha(_,_,_))).
@@ -50,8 +50,8 @@ esPicaron(Animal):-	peso(Animal,_),
 					comio(Animal,Cucaracha),
 					jugosita(Cucaracha).
 						
-esPicaron(Animal):-	peso(Animal,_),
-					comio(Animal,vaquitaSanAntonio(remeditos,_)).
+esPicaron(Animal):-	
+	peso(Animal,_),				comio(Animal,vaquitaSanAntonio(remeditos,_)).
 
 esPicaron(pumba).
 
@@ -60,7 +60,8 @@ esPicaron(pumba).
 cuantoEngorda(Personaje,Peso):-	peso(Personaje,_),
 								pesoDeLasPresas(Personaje,PesoPresas),
 								pesoDeLosBichos(Personaje,PesoBichos),
-								Peso is PesoPresas + PesoBichos.
+	
+	Peso is PesoPresas + PesoBichos.
 								
 pesoDeLasPresas(Personaje,PesoPresas):-	findall(Peso,(persigue(Personaje,Presa),pesoPresaYSusBocados(Presa,Peso)),Pesos),
 										sumlist(Pesos,PesoPresas).								
@@ -69,7 +70,8 @@ pesoDeLasPresas(Personaje,PesoPresas):-	findall(Peso,(persigue(Personaje,Presa),
 pesoPresaYSusBocados(Presa,Peso):-	peso(Presa,PesoPresa),
 									pesoDeLasPresas(Presa,PesoPresas),
 									pesoDeLosBichos(Presa,PesoBichos),
-									Peso is PesoPresa + PesoBichos + PesoPresas.
+	
+Peso is PesoPresa + PesoBichos + PesoPresas.
 										
 pesoDeLosBichos(Personaje,Peso):-	findall(PesoBicho,(comio(Personaje,Bicho),pesoBicho(Bicho,PesoBicho)),PesosBichos),
 									sumlist(PesosBichos,Peso).
