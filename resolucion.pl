@@ -139,7 +139,7 @@ test(punto1d,nondet):-
 % 2a) Se quiere saber cuánto engorda un personaje (sabiendo que engorda una cantidad igual a la suma de 
 %  los pesos de todos los bichos en su menú). Los bichos no engordan.
 
-cuantoEngorda(Personaje,Total):-
+cuantoEngordaPorBicho(Personaje,Total):-
     personaje(Personaje),
     findall(Peso,(comio(Personaje,Bicho),pesoBicho(Bicho,Peso)),Pesos),
     sumlist(Pesos,Total).
@@ -157,9 +157,9 @@ pesoBicho(vaquitaSanAntonio(Nombre,Peso),Peso):-
 
 :- begin_tests(resolucion).
 test(punto2a,nondet):-
-    cuantoEngorda(pumba,83),
-    cuantoEngorda(timon,17),
-    cuantoEngorda(simba,10).
+    cuantoEngordaPorBicho(pumba,83),
+    cuantoEngordaPorBicho(timon,17),
+    cuantoEngordaPorBicho(simba,10).
 :- end_tests(resolucion).
 
 % b) Pero como indica la ley de la selva, cuando un personaje persigue a otro, se lo termina comiendo, y por lo 
@@ -169,6 +169,18 @@ cuantoEngordaPorPresa(Personaje,Total):-
     personaje(Personaje),
     findall(Peso,(persigue(Personaje,Presa),peso(Presa,Peso)),Pesos),
     sumlist(Pesos,Total).
+
+cuantoEngordaPorPresaYBicho(Personaje,Total):-
+    cuantoEngordaPorPresa(Personaje,TotalPresa),
+    cuantoEngordaPorBicho(Personaje,TotalBicho),
+    Total is TotalPresa + TotalBicho.
+
+cuantoEngorda(Personaje,Total):-
+    persigue(Personaje,Presa),
+    cuantoEngordaPorPresaYBicho(Personaje,TotalPresaYBicho),
+    cuantoEngordaPorBicho(Presa,TotalBicho),
+    Total is TotalPresaYBicho + TotalBicho.
+
 
     % vaquitaSanAntonio(gervasia,3)
 % hormiga(tuNoEresLaReina)
